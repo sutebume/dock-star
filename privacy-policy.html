@@ -1,0 +1,353 @@
+<title>Dock Star Privacy Policy</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Nunito:wght@400;600;700&display=swap">
+<style>
+  :root {
+    --navy:   #16324A;
+    --ocean:  #2FA4C9;
+    --coral:  #FF7A59;
+    --cream:  #FFF8EE;
+    --steel:  #8AA4B0;
+    --ink:    #1E3545;
+    --prose:  #2E4A5A;
+    --muted:  #5A7A8A;
+    --rule:   #D4E4EC;
+    --bg:     #F5F9FB;
+    --surface:#FFFFFF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --navy:   #7EC8E3;
+      --ocean:  #4DC3E8;
+      --coral:  #FF8A6A;
+      --cream:  #1A2E3A;
+      --steel:  #6A8A9A;
+      --ink:    #E8F4F8;
+      --prose:  #C8DCE8;
+      --muted:  #7A9AAA;
+      --rule:   #2A3E4A;
+      --bg:     #0E1E2A;
+      --surface:#162636;
+    }
+  }
+  :root[data-theme="dark"] {
+    --navy:   #7EC8E3;
+    --ocean:  #4DC3E8;
+    --coral:  #FF8A6A;
+    --cream:  #1A2E3A;
+    --steel:  #6A8A9A;
+    --ink:    #E8F4F8;
+    --prose:  #C8DCE8;
+    --muted:  #7A9AAA;
+    --rule:   #2A3E4A;
+    --bg:     #0E1E2A;
+    --surface:#162636;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--prose);
+    font-family: 'Nunito', system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.75;
+  }
+
+  /* Header */
+  .doc-header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--rule);
+    padding: 48px 24px 36px;
+    text-align: center;
+  }
+  .anchor-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #2FA4C9 0%, #16324A 100%);
+    margin-bottom: 16px;
+  }
+  .anchor-mark svg {
+    width: 30px;
+    height: 30px;
+    fill: #FFC93C;
+  }
+  .game-label {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ocean);
+    margin: 0 0 6px;
+  }
+  .doc-title {
+    font-family: 'Fredoka', sans-serif;
+    font-size: clamp(26px, 5vw, 34px);
+    font-weight: 600;
+    color: var(--ink);
+    margin: 0 0 10px;
+    text-wrap: balance;
+  }
+  .doc-meta {
+    font-size: 14px;
+    color: var(--muted);
+    margin: 0;
+  }
+
+  /* Body */
+  .doc-body {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  .intro {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-left: 4px solid var(--ocean);
+    border-radius: 6px;
+    padding: 20px 24px;
+    margin-bottom: 40px;
+    font-size: 15px;
+    color: var(--prose);
+  }
+  .intro strong { color: var(--ink); }
+
+  section {
+    margin-bottom: 40px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid var(--rule);
+  }
+  section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  h2 {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--ink);
+    margin: 0 0 12px;
+    text-wrap: balance;
+  }
+
+  p {
+    margin: 0 0 14px;
+    max-width: 62ch;
+  }
+  p:last-child { margin-bottom: 0; }
+
+  ul {
+    margin: 0 0 14px;
+    padding-left: 20px;
+  }
+  li {
+    margin-bottom: 6px;
+    max-width: 60ch;
+  }
+  li:last-child { margin-bottom: 0; }
+
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    margin: 16px 0;
+    overflow-x: auto;
+    display: block;
+  }
+  .data-table th {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-align: left;
+    padding: 8px 12px;
+    border-bottom: 2px solid var(--rule);
+    white-space: nowrap;
+  }
+  .data-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+    color: var(--prose);
+  }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table td:first-child {
+    font-weight: 600;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+
+  .tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 4px;
+    margin-right: 4px;
+  }
+  .tag-local  { background: #E8F7F0; color: #1A7A50; }
+  .tag-server { background: #E8F0FA; color: #2050A0; }
+  .tag-third  { background: #FEF3E8; color: #A05020; }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .tag-local  { background: #0A2A1A; color: #4ACA80; }
+    :root:not([data-theme="light"]) .tag-server { background: #0A1A3A; color: #6A9AE0; }
+    :root:not([data-theme="light"]) .tag-third  { background: #2A1A0A; color: #E0904A; }
+  }
+  :root[data-theme="dark"] .tag-local  { background: #0A2A1A; color: #4ACA80; }
+  :root[data-theme="dark"] .tag-server { background: #0A1A3A; color: #6A9AE0; }
+  :root[data-theme="dark"] .tag-third  { background: #2A1A0A; color: #E0904A; }
+
+  a { color: var(--ocean); text-underline-offset: 3px; }
+  a:hover { color: var(--coral); }
+
+  .contact-box {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 20px 24px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .contact-box .icon {
+    font-size: 22px;
+    line-height: 1;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .contact-box p { margin: 0; }
+  .contact-box strong { display: block; color: var(--ink); margin-bottom: 4px; }
+
+  footer {
+    text-align: center;
+    padding: 24px;
+    font-size: 13px;
+    color: var(--muted);
+    border-top: 1px solid var(--rule);
+  }
+</style>
+
+<div class="doc-header">
+  <div class="anchor-mark">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm0 2a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm1 5.07V10h3a1 1 0 1 1 0 2h-3v6.93A8.001 8.001 0 0 0 19.93 13H18a1 1 0 1 1 0-2h2a1 1 0 0 1 1 1 10 10 0 0 1-20 0 1 1 0 0 1 1-1h2a1 1 0 1 1 0 2H4.07A8.001 8.001 0 0 0 11 18.93V12H8a1 1 0 1 1 0-2h3V9.07A3.003 3.003 0 0 1 9 6.17V6h6v.17A3.003 3.003 0 0 1 13 9.07z"/>
+    </svg>
+  </div>
+  <p class="game-label">Dock Star</p>
+  <h1 class="doc-title">Privacy Policy</h1>
+  <p class="doc-meta">Effective date: September 7, 2026 &nbsp;·&nbsp; Version 1.0</p>
+</div>
+
+<div class="doc-body">
+
+  <div class="intro">
+    This policy explains what information <strong>Dock Star</strong> collects, why it collects it, and how it is used. We keep data collection minimal — you need only a display name to appear on the leaderboard, and everything else stays on your device.
+  </div>
+
+  <section>
+    <h2>Information We Collect</h2>
+    <p>Dock Star collects the minimum necessary to run the game and its global leaderboard.</p>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Data</th>
+          <th>Where stored</th>
+          <th>Purpose</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Display name</td>
+          <td><span class="tag tag-local">Local</span><span class="tag tag-server">Server</span></td>
+          <td>Shown on the global leaderboard alongside your scores</td>
+        </tr>
+        <tr>
+          <td>Level scores &amp; stars</td>
+          <td><span class="tag tag-local">Local</span><span class="tag tag-server">Server</span></td>
+          <td>Tracks your best runs; top scores appear on the leaderboard</td>
+        </tr>
+        <tr>
+          <td>Purchase entitlements</td>
+          <td><span class="tag tag-local">Local</span></td>
+          <td>Remembers "Remove Ads" purchase; never leaves your device</td>
+        </tr>
+        <tr>
+          <td>Ad interactions</td>
+          <td><span class="tag tag-third">Google AdMob</span></td>
+          <td>Serves interstitial ads to players who have not purchased ad removal</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>We do not collect your real name, email address, location, device identifiers, or any other personal information beyond the display name you choose.</p>
+  </section>
+
+  <section>
+    <h2>How We Use Your Information</h2>
+    <ul>
+      <li><strong>Leaderboard</strong> — your display name and best level scores are sent to our server at <code>dockstar.openagentarena.net</code> to populate the Global Rankings screen.</li>
+      <li><strong>Game progress</strong> — stars earned, coins, and skins owned are stored locally on your device using the browser's localStorage. This data is not shared with anyone.</li>
+      <li><strong>Advertising</strong> — free players see interstitial ads served by Google AdMob. AdMob may use device advertising IDs subject to its own privacy policy. Purchasing "Remove Ads" disables all advertising and no ad data is collected thereafter.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Third-Party Services</h2>
+    <p>Dock Star uses the following third-party services. Each operates under its own privacy policy.</p>
+    <ul>
+      <li><strong>Google AdMob</strong> — in-app advertising for free players. <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Privacy Policy</a></li>
+      <li><strong>RevenueCat</strong> — processes in-app purchases (Remove Ads, Gem Chests) through the App Store or Google Play. <a href="https://www.revenuecat.com/privacy" target="_blank" rel="noopener">RevenueCat Privacy Policy</a></li>
+      <li><strong>Apple App Store / Google Play</strong> — payment processing for purchases. We never receive your payment details.</li>
+    </ul>
+    <p>We do not sell, rent, or share your personal information with any other third parties.</p>
+  </section>
+
+  <section>
+    <h2>Data Retention and Deletion</h2>
+    <p>Leaderboard entries (display name and scores) are stored on our server for as long as the game is operational. To remove your leaderboard entry, email us at the address below and we will delete it within 7 days.</p>
+    <p>Local game data can be cleared at any time by clearing your browser or app storage in your device settings.</p>
+  </section>
+
+  <section>
+    <h2>Children's Privacy</h2>
+    <p>Dock Star is rated E for Everyone and is designed to be appropriate for all ages. We do not knowingly collect personal information from children under 13 without verifiable parental consent.</p>
+    <p>If you believe a child under 13 has submitted a display name to our leaderboard without consent, please contact us and we will remove it promptly.</p>
+  </section>
+
+  <section>
+    <h2>Security</h2>
+    <p>All communication between the game and our leaderboard server uses HTTPS. Leaderboard data is stored on a private server and is not publicly accessible beyond what is displayed in-game.</p>
+  </section>
+
+  <section>
+    <h2>Changes to This Policy</h2>
+    <p>We may update this policy as the game evolves. When we do, we will update the effective date at the top of this page. Continued use of Dock Star after changes constitutes acceptance of the updated policy.</p>
+  </section>
+
+  <section>
+    <h2>Contact Us</h2>
+    <div class="contact-box">
+      <div class="icon">⚓</div>
+      <div>
+        <p><strong>Questions about this policy?</strong> Reach the captain at <a href="mailto:rsnavales@gmail.com">rsnavales@gmail.com</a>. We aim to respond within 48 hours.</p>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  &copy; 2026 Dock Star &nbsp;·&nbsp; Every berth is an adventure.
+</footer>

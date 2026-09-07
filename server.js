@@ -81,6 +81,17 @@ http.createServer(function (req, res) {
     return;
   }
 
+  /* GET /privacy — privacy policy page */
+  if (req.url === '/privacy' && req.method === 'GET') {
+    var ppFile = path.join(ROOT, 'privacy-policy.html');
+    fs.readFile(ppFile, function (err, data) {
+      if (err) { res.writeHead(404); res.end('not found'); return; }
+      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+      res.end(data);
+    });
+    return;
+  }
+
   /* Static files */
   var urlPath = decodeURIComponent(req.url.split('?')[0]);
   if (urlPath === '/') urlPath = '/index.html';
