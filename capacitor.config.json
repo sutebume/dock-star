@@ -1,0 +1,15 @@
+{
+  "appId": "com.dockstar.game",
+  "appName": "Dock Star",
+  "webDir": "www",
+  "backgroundColor": "#2FA4C9",
+  "android": {
+    "allowMixedContent": false
+  },
+  "plugins": {
+    "AdMob": {
+      "appIdAndroid": "ca-app-pub-9105653107748286~6497942770",
+      "initializeForTesting": false
+    }
+  }
+}

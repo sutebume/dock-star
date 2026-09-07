@@ -150,31 +150,7 @@ DS.ui = (function () {
   /* ---------- interstitial ad ---------- */
   function maybeShowAd() {
     if (DS.payments.adFree()) return Promise.resolve();
-    return new Promise(function (resolve) {
-      var overlay = $('overlay-ad');
-      var skipBtn = $('ad-skip');
-      var secs = 5;
-      skipBtn.disabled = true;
-      skipBtn.innerHTML = '<span id="ad-countdown">' + secs + '</span>';
-      overlay.hidden = false;
-      var timer = setInterval(function () {
-        secs--;
-        var c = document.getElementById('ad-countdown');
-        if (secs <= 0) {
-          clearInterval(timer);
-          skipBtn.disabled = false;
-          skipBtn.textContent = 'SKIP AD ×';
-        } else if (c) {
-          c.textContent = secs;
-        }
-      }, 1000);
-      skipBtn.onclick = function () {
-        if (skipBtn.disabled) return;
-        clearInterval(timer);
-        overlay.hidden = true;
-        resolve();
-      };
-    });
+    return DS.ads.show();
   }
 
   /* ---------- leaderboard ---------- */
