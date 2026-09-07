@@ -1,0 +1,17 @@
+{
+  "name": "dock-star",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Dock Star — playful ship docking & undocking game",
+  "scripts": {
+    "start": "node server.js",
+    "build:www": "node scripts/build-www.js",
+    "sync": "npm run build:www && npx cap sync",
+    "android": "npm run sync && npx cap open android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.5.1",
+    "@capacitor/cli": "^8.5.1",
+    "@capacitor/core": "^8.5.1"
+  }
+}
