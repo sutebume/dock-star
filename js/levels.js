@@ -243,6 +243,150 @@ DS.LEVELS = [
     ],
     spawn: { x: 65, y: 510, h: 0.35 },
     tip: 'The ultimate challenge. Island narrows the channel — thread the needle and make fast!'
+  },
+
+  /* ── ELITE TIER — FURY GATES ─────────────────────────────────────── */
+  {
+    name: 'CROWDED APPROACH', zone: 'FURY GATES', mode: 'dock', par: 65,
+    wind: { deg: 0, kn: 18, gust: 9 }, current: { deg: 90, kn: 1.5 }, tide: true,
+    quays: [{ x: 322, y: -80, w: 140, h: 700 }],
+    bollards: [{ x: 336, y: 165 }, { x: 336, y: 245 }, { x: 336, y: 325 }],
+    berth: { x: 248, y: 136, w: 74, h: 200 },
+    traffic: [
+      { x: 300, y: 40,  hull: '#E84A5F', hullDark: '#B52F45' },
+      { x: 300, y: 432, hull: '#4FA8E0', hullDark: '#2E7DB0' },
+      { x: 155, y: 172, hull: '#FFC93C', hullDark: '#E0A820' },
+      { x: 155, y: 388, hull: '#66C28A', hullDark: '#3BA25F' }
+    ],
+    spawn: { x: 60, y: 510, h: 0.35 },
+    tip: 'Four ships jam every lane. Find the gap and slot in!'
+  },
+  {
+    name: 'LOCKED IN', zone: 'FURY GATES', mode: 'undock', par: 58,
+    wind: { deg: 0, kn: 18, gust: 9 }, current: { deg: 90, kn: 1.5 }, tide: true,
+    quays: [{ x: 322, y: -80, w: 140, h: 700 }],
+    bollards: [{ x: 336, y: 165 }, { x: 336, y: 245 }, { x: 336, y: 325 }],
+    berth: { x: 248, y: 136, w: 74, h: 200 },
+    traffic: [
+      { x: 300, y: 40,  hull: '#E84A5F', hullDark: '#B52F45' },
+      { x: 300, y: 432, hull: '#4FA8E0', hullDark: '#2E7DB0' },
+      { x: 155, y: 172, hull: '#FFC93C', hullDark: '#E0A820' },
+      { x: 155, y: 388, hull: '#66C28A', hullDark: '#3BA25F' }
+    ],
+    spawn: { x: 303, y: 245, h: 0 }, moored: true,
+    exit: { x: 0, y: 0, w: 390, h: 85 },
+    tip: 'Four ships box you in. Thread the gap slowly — speed kills here!'
+  },
+  {
+    name: 'FURY GATES', zone: 'FURY GATES', mode: 'dock', par: 60,
+    wind: { deg: 0, kn: 20, gust: 11 }, current: { deg: 270, kn: 1.5 }, tide: true,
+    quays: [{ x: 322, y: -80, w: 140, h: 700 }, { x: 8, y: 195, w: 110, h: 46 }],
+    island: { x: 8, y: 195, w: 110, h: 46 },
+    bollards: [{ x: 336, y: 165 }, { x: 336, y: 245 }, { x: 336, y: 325 }],
+    berth: { x: 248, y: 136, w: 74, h: 200 },
+    traffic: [
+      { x: 300, y: 40,  hull: '#E84A5F', hullDark: '#B52F45' },
+      { x: 300, y: 432, hull: '#4FA8E0', hullDark: '#2E7DB0' },
+      { x: 175, y: 338, hull: '#FFC93C', hullDark: '#E0A820' }
+    ],
+    spawn: { x: 60, y: 515, h: 0.35 },
+    tip: 'Island gate, max wind against current — commit to the approach early!'
+  },
+
+  /* ── ELITE TIER — GHOST HARBOUR ──────────────────────────────────── */
+  {
+    name: 'ROGUE CURRENT', zone: 'GHOST HARBOUR', mode: 'dock', par: 58,
+    wind: { deg: 0, kn: 16, gust: 8 }, current: { deg: 90, kn: 2.0 }, tide: true,
+    quays: [{ x: 322, y: -80, w: 140, h: 700 }],
+    bollards: [{ x: 336, y: 165 }, { x: 336, y: 245 }, { x: 336, y: 325 }],
+    berth: { x: 248, y: 136, w: 74, h: 200 },
+    traffic: [
+      { x: 300, y: 40,  hull: '#A67DB8', hullDark: '#7A5090' },
+      { x: 300, y: 432, hull: '#5A6B78', hullDark: '#3A4B58' }
+    ],
+    spawn: { x: 65, y: 510, h: 0.35 },
+    tip: 'A two-knot rogue current rips down the channel. Aim far upstream!'
+  },
+  {
+    name: 'PHANTOM SLIP', zone: 'GHOST HARBOUR', mode: 'undock', par: 52,
+    wind: { deg: 0, kn: 18, gust: 10 }, current: { deg: 270, kn: 2.0 }, tide: true,
+    quays: [{ x: 322, y: -80, w: 140, h: 700 }],
+    bollards: [{ x: 336, y: 165 }, { x: 336, y: 245 }, { x: 336, y: 325 }],
+    berth: { x: 248, y: 136, w: 74, h: 200 },
+    traffic: [
+      { x: 300, y: 40,  hull: '#A67DB8', hullDark: '#7A5090' },
+      { x: 300, y: 432, hull: '#5A6B78', hullDark: '#3A4B58' },
+      { x: 155, y: 258, hull: '#E84A5F', hullDark: '#B52F45' }
+    ],
+    spawn: { x: 303, y: 245, h: 0 }, moored: true,
+    exit: { x: 0, y: 0, w: 390, h: 85 },
+    tip: 'Ebb tide rips north, ship in the channel — release lines and slide west!'
+  },
+  {
+    name: 'DARK CHANNEL', zone: 'GHOST HARBOUR', mode: 'dock', par: 52,
+    wind: { deg: 0, kn: 18, gust: 10 }, current: { deg: 90, kn: 2.0 }, tide: true,
+    quays: [{ x: 322, y: -80, w: 140, h: 700 }, { x: 8, y: 195, w: 110, h: 46 }],
+    island: { x: 8, y: 195, w: 110, h: 46 },
+    bollards: [{ x: 336, y: 165 }, { x: 336, y: 245 }, { x: 336, y: 325 }],
+    berth: { x: 248, y: 136, w: 72, h: 200 },
+    traffic: [
+      { x: 300, y: 40,  hull: '#A67DB8', hullDark: '#7A5090' },
+      { x: 300, y: 432, hull: '#5A6B78', hullDark: '#3A4B58' },
+      { x: 175, y: 172, hull: '#E84A5F', hullDark: '#B52F45' },
+      { x: 175, y: 338, hull: '#FFC93C', hullDark: '#E0A820' }
+    ],
+    spawn: { x: 60, y: 515, h: 0.35 },
+    tip: 'Max current, island narrows, four ships — feel the dark!'
+  },
+
+  /* ── ELITE TIER — LEGEND'S DOCK ──────────────────────────────────── */
+  {
+    name: "LEGEND'S APPROACH", zone: "LEGEND'S DOCK", mode: 'dock', par: 50,
+    wind: { deg: 0, kn: 20, gust: 11 }, current: { deg: 90, kn: 2.0 }, tide: true,
+    quays: [{ x: 322, y: -80, w: 140, h: 700 }, { x: 8, y: 195, w: 110, h: 46 }],
+    island: { x: 8, y: 195, w: 110, h: 46 },
+    bollards: [{ x: 336, y: 165 }, { x: 336, y: 245 }, { x: 336, y: 325 }],
+    berth: { x: 248, y: 136, w: 72, h: 200 },
+    traffic: [
+      { x: 300, y: 40,  hull: '#E84A5F', hullDark: '#B52F45' },
+      { x: 300, y: 432, hull: '#4FA8E0', hullDark: '#2E7DB0' },
+      { x: 155, y: 172, hull: '#FFC93C', hullDark: '#E0A820' },
+      { x: 155, y: 388, hull: '#66C28A', hullDark: '#3BA25F' }
+    ],
+    spawn: { x: 60, y: 515, h: 0.35 },
+    tip: 'Only legends attempt this. Max wind, max current, four ships, island gate. Go.'
+  },
+  {
+    name: 'NO QUARTER', zone: "LEGEND'S DOCK", mode: 'undock', par: 45,
+    wind: { deg: 0, kn: 20, gust: 11 }, current: { deg: 270, kn: 2.0 }, tide: true,
+    quays: [{ x: 322, y: -80, w: 140, h: 700 }],
+    bollards: [{ x: 336, y: 165 }, { x: 336, y: 245 }, { x: 336, y: 325 }],
+    berth: { x: 248, y: 136, w: 72, h: 200 },
+    traffic: [
+      { x: 300, y: 40,  hull: '#E84A5F', hullDark: '#B52F45' },
+      { x: 300, y: 432, hull: '#4FA8E0', hullDark: '#2E7DB0' },
+      { x: 155, y: 172, hull: '#FFC93C', hullDark: '#E0A820' },
+      { x: 155, y: 388, hull: '#66C28A', hullDark: '#3BA25F' }
+    ],
+    spawn: { x: 303, y: 245, h: 0 }, moored: true,
+    exit: { x: 0, y: 0, w: 390, h: 85 },
+    tip: 'Max wind, max current, four ships. Thread the gap — no quarter given!'
+  },
+  {
+    name: 'GRANDMASTER', zone: "LEGEND'S DOCK", mode: 'dock', par: 40,
+    wind: { deg: 0, kn: 20, gust: 12 }, current: { deg: 90, kn: 2.0 }, tide: true,
+    quays: [{ x: 322, y: -80, w: 140, h: 700 }, { x: 8, y: 180, w: 120, h: 52 }],
+    island: { x: 8, y: 180, w: 120, h: 52 },
+    bollards: [{ x: 336, y: 165 }, { x: 336, y: 245 }, { x: 336, y: 325 }],
+    berth: { x: 248, y: 136, w: 70, h: 200 },
+    traffic: [
+      { x: 300, y: 40,  hull: '#E84A5F', hullDark: '#B52F45' },
+      { x: 300, y: 432, hull: '#4FA8E0', hullDark: '#2E7DB0' },
+      { x: 155, y: 172, hull: '#FFC93C', hullDark: '#E0A820' },
+      { x: 155, y: 388, hull: '#66C28A', hullDark: '#3BA25F' }
+    ],
+    spawn: { x: 55, y: 515, h: 0.35 },
+    tip: 'The hardest berth in the game. Biggest island, tightest slot, full storm. This is Grandmaster.'
   }
 ];
 
@@ -254,7 +398,10 @@ DS.ZONES = [
   { name: 'BUSY PORT',     blurb: 'harbor traffic',        color: '#E8956D' },
   { name: 'MONSOON BAY',   blurb: 'monsoon winds',         color: '#A67DB8', dark: true },
   { name: 'TYPHOON REACH', blurb: 'extreme weather',       color: '#E84A5F', dark: true },
-  { name: "MASTER'S TEST", blurb: 'no margin for error',   color: '#2C3E50', dark: true }
+  { name: "MASTER'S TEST", blurb: 'no margin for error',   color: '#2C3E50', dark: true },
+  { name: 'FURY GATES',    blurb: 'four-ship gauntlet',    color: '#FF5733', dark: true },
+  { name: 'GHOST HARBOUR', blurb: 'rogue tides & darkness', color: '#3D405B', dark: true },
+  { name: "LEGEND'S DOCK", blurb: 'nothing held back',      color: '#B7950B', dark: true }
 ];
 
 DS.SKINS = [
