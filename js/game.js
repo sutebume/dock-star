@@ -33,7 +33,8 @@ DS.Game = function (opts) {
   var LINE_DAMP = 3;
   var SNAP_AT = 12;         // px stretch -> line parts
   var ATTACH_R = 80;        // px, send-line range
-  var CRASH_KN = 0.8;       // contact above 0.8 kn ends the run on docking
+  var CRASH_KN = 0.8;       // quay/wall contact threshold
+  var CRASH_TRAFFIC_KN = 0.1; // traffic ship contact threshold (any graze fails)
   var HULL_OFFS = [-42, -21, 0, 21, 42];
   var HULL_R = 16;
   this.KN = 10;             // px/s per knot (display)
@@ -305,9 +306,10 @@ DS.Game = function (opts) {
           if (vn < 0) {
             var speedIn = -vn;
             if (speedIn > self.maxContact) self.maxContact = speedIn;
-            if (speedIn > CRASH_KN * self.KN) {
-              if (rect.isTraffic) crashedTraffic = true;
-              else crashed = true;
+            if (rect.isTraffic && speedIn > CRASH_TRAFFIC_KN * self.KN) {
+              crashedTraffic = true;
+            } else if (!rect.isTraffic && speedIn > CRASH_KN * self.KN) {
+              crashed = true;
             }
             // kill inbound velocity, damp rotation
             s.vx -= nnx * vn; s.vy -= nny * vn;
