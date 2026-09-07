@@ -1,19 +1,17 @@
-/* Dock Star — payments abstraction.
-   The game only ever talks to DS.payments. In the web/dev build a mock
-   provider simulates the store purchase sheet; in the store build the
-   mock is swapped for a real billing provider (e.g. RevenueCat via
-   Capacitor) without touching the shop UI.
-   Product ids here must match the products created in App Store
-   Connect / Play Console. Prices shown are placeholders — real builds
-   read localized prices from the store at runtime. */
+/* Dock Star — payments.
+   Native (Capacitor): RevenueCat @revenuecat/purchases-capacitor v13+
+   Browser/dev: mock purchase sheet for local testing */
 window.DS = window.DS || {};
 
 DS.payments = (function () {
+  var RC_API_KEY = 'goog_EibuKkyywsysRVwbPsVGzoTXFHH';
+
+  /* Fallback catalog — prices updated from store at runtime via getOfferings */
   var CATALOG = [
-    { id: 'no_ads',    type: 'nonconsumable', title: 'Remove Ads',  price: '$2.99' },
-    { id: 'gems_100',  type: 'consumable', title: '100 gems',    price: '$1.99', gems: 100 },
-    { id: 'gems_550',  type: 'consumable', title: '550 gems',    price: '$7.99', gems: 550, badge: 'BEST VALUE' },
-    { id: 'gems_1200', type: 'consumable', title: '1,200 gems',  price: '$14.99', gems: 1200 }
+    { id: 'no_ads',    type: 'nonconsumable', title: 'Remove Ads',   price: '$2.99',  gems: 0 },
+    { id: 'gems_100',  type: 'consumable',    title: '100 Gems',     price: '$1.99',  gems: 100 },
+    { id: 'gems_550',  type: 'consumable',    title: '550 Gems',     price: '$7.99',  gems: 550, badge: 'BEST VALUE' },
+    { id: 'gems_1200', type: 'consumable',    title: '1,200 Gems',   price: '$14.99', gems: 1200 }
   ];
 
   function product(id) {
@@ -21,24 +19,97 @@ DS.payments = (function () {
     return null;
   }
 
-  var record = { owned: [] };
-  try {
-    var raw = localStorage.getItem('dockstar-store-record');
-    if (raw) {
-      var r = JSON.parse(raw);
-      if (r && typeof r === 'object') record.owned = r.owned || [];
-    }
-  } catch (e) {}
-  function saveRecord() {
-    try { localStorage.setItem('dockstar-store-record', JSON.stringify(record)); } catch (e) {}
+  /* ── RevenueCat native bridge ──────────────────────────────────────── */
+
+  function getPlugin() {
+    try {
+      if (typeof Capacitor !== 'undefined' &&
+          Capacitor.isNativePlatform &&
+          Capacitor.isNativePlatform() &&
+          Capacitor.Plugins &&
+          Capacitor.Plugins.Purchases) {
+        return Capacitor.Plugins.Purchases;
+      }
+    } catch (e) {}
+    return null;
   }
 
+  function applyCustomerInfo(info) {
+    try {
+      var active = info && info.entitlements && info.entitlements.active;
+      if (active && active['no_ads']) {
+        DS.state.data.ent.noAds = true;
+        DS.state.save();
+      }
+    } catch (e) {}
+  }
+
+  function applyPurchase(cat) {
+    if (cat.gems) DS.state.data.gems += cat.gems;
+    if (cat.id === 'no_ads') DS.state.data.ent.noAds = true;
+    DS.state.save();
+  }
+
+  function rcInit() {
+    var p = getPlugin();
+    if (!p) return;
+    p.configure({ apiKey: RC_API_KEY }).catch(function () {});
+    /* Restore entitlements silently on launch */
+    p.getCustomerInfo()
+      .then(function (r) { applyCustomerInfo(r.customerInfo); })
+      .catch(function () {});
+    /* Pre-fetch offerings to get real localized prices */
+    p.getOfferings()
+      .then(function (r) {
+        var pkgs = (r.current && r.current.availablePackages) || [];
+        pkgs.forEach(function (pkg) {
+          var pid = pkg.product && pkg.product.identifier;
+          var cat = product(pid);
+          if (cat && pkg.product.priceString) cat.price = pkg.product.priceString;
+        });
+      })
+      .catch(function () {});
+  }
+
+  function rcPurchase(id) {
+    var p = getPlugin();
+    if (!p) return Promise.reject('no_plugin');
+    return p.getOfferings().then(function (r) {
+      var pkgs = (r.current && r.current.availablePackages) || [];
+      var pkg = null;
+      for (var i = 0; i < pkgs.length; i++) {
+        if (pkgs[i].product && pkgs[i].product.identifier === id) {
+          pkg = pkgs[i]; break;
+        }
+      }
+      if (!pkg) return Promise.reject('product_not_found: ' + id);
+      return p.purchasePackage({ aPackage: pkg });
+    }).then(function (result) {
+      applyCustomerInfo(result.customerInfo);
+      var cat = product(id);
+      if (cat) applyPurchase(cat);
+      DS.sfx.win();
+      return { ok: true, productId: id };
+    });
+  }
+
+  function rcRestore() {
+    var p = getPlugin();
+    if (!p) return Promise.reject('no_plugin');
+    return p.restorePurchases().then(function (r) {
+      applyCustomerInfo(r.customerInfo);
+      return { ok: true, restored: r.customerInfo ? 1 : 0 };
+    });
+  }
+
+  /* ── Mock / browser path ───────────────────────────────────────────── */
+
   var sheetResolve = null;
-  function showSheet(p) {
+  function showSheet(cat) {
     return new Promise(function (resolve) {
       sheetResolve = resolve;
-      document.getElementById('sheet-title').textContent = p.title;
-      document.getElementById('sheet-price').textContent = p.price;
+      document.getElementById('sheet-title').textContent = cat.title;
+      document.getElementById('sheet-price').textContent = cat.price;
       document.getElementById('overlay-store').hidden = false;
     });
   }
@@ -47,38 +118,41 @@ DS.payments = (function () {
     if (sheetResolve) { sheetResolve(ok); sheetResolve = null; }
   }
 
-  function applyPurchase(p) {
-    var d = DS.state.data;
-    if (p.gems) d.gems += p.gems;
-    if (p.id === 'no_ads') d.ent.noAds = true;
-    DS.state.save();
+  function mockPurchase(id) {
+    var cat = product(id);
+    if (!cat) return Promise.resolve({ ok: false, error: 'unknown_product' });
+    return showSheet(cat).then(function (ok) {
+      if (!ok) return { ok: false, error: 'cancelled' };
+      applyPurchase(cat);
+      DS.sfx.win();
+      return { ok: true, productId: id };
+    });
   }
+
+  /* ── Public API ────────────────────────────────────────────────────── */
 
   return {
     catalog: function () { return CATALOG.slice(); },
     product: product,
 
     purchase: function (id) {
-      var p = product(id);
-      if (!p) return Promise.resolve({ ok: false, error: 'unknown_product' });
-      return showSheet(p).then(function (ok) {
-        if (!ok) return { ok: false, error: 'cancelled' };
-        if (p.type === 'nonconsumable' && record.owned.indexOf(p.id) < 0) record.owned.push(p.id);
-        saveRecord();
-        applyPurchase(p);
-        DS.sfx.win();
-        return { ok: true, productId: p.id };
-      });
+      if (getPlugin()) {
+        return rcPurchase(id).catch(function (err) {
+          /* err.userCancelled is true when the user dismisses the Play sheet */
+          var cancelled = err && err.userCancelled;
+          return { ok: false, error: cancelled ? 'cancelled' : String(err && err.code || err || 'purchase_failed') };
+        });
+      }
+      return mockPurchase(id);
     },
 
     restore: function () {
-      var d = DS.state.data;
-      var n = 0;
-      for (var i = 0; i < record.owned.length; i++) {
-        if (record.owned[i] === 'no_ads' && !d.ent.noAds) { d.ent.noAds = true; n++; }
+      if (getPlugin()) {
+        return rcRestore().catch(function () {
+          return { ok: false, error: 'restore_failed' };
+        });
       }
-      DS.state.save();
-      return Promise.resolve({ ok: true, restored: n });
+      return Promise.resolve({ ok: true, restored: 0 });
     },
 
     adFree: function () {
@@ -88,6 +162,7 @@ DS.payments = (function () {
     init: function () {
       document.getElementById('sheet-buy').addEventListener('click', function () { closeSheet(true); });
       document.getElementById('sheet-cancel').addEventListener('click', function () { closeSheet(false); });
+      rcInit();
     }
   };
 })();
