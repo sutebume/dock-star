@@ -1,6 +1,10 @@
 /* Dock Star — screens, HUD, console input, persistence. */
 window.DS = window.DS || {};
 
+DS.API_BASE = (typeof cordova !== 'undefined' || window.location.protocol === 'file:')
+  ? 'https://dockstar.openagentarena.net'
+  : '';
+
 /* ---------- persistence ---------- */
 DS.state = (function () {
   var data = { name: '', stars: {}, scores: {}, coins: 0, gems: 0, skin: 'tug', owned: { tug: true }, ent: { noAds: false } };
@@ -177,7 +181,7 @@ DS.ui = (function () {
   function renderLeaderboard() {
     var body = $('lb-body');
     body.innerHTML = '<div class="lb-loading">Loading scores…</div>';
-    fetch('/api/scores').then(function (r) { return r.json(); }).then(function (rows) {
+    fetch(DS.API_BASE + '/api/scores').then(function (r) { return r.json(); }).then(function (rows) {
       if (!rows || rows.length === 0) {
         body.innerHTML = '<div class="lb-loading">No scores yet. Be the first!</div>';
         return;
@@ -212,7 +216,7 @@ DS.ui = (function () {
     var name = DS.state.data.name;
     if (!name) return;
     var L = DS.LEVELS[res.level];
-    fetch('/api/scores', {
+    fetch(DS.API_BASE + '/api/scores', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name: name, levelIdx: res.level, levelName: L.name, total: res.total, stars: res.stars })
@@ -228,7 +232,7 @@ DS.ui = (function () {
       var total = DS.state.bestScore(i) || (stars === 3 ? 800 : stars === 2 ? 550 : 300);
       var L = DS.LEVELS[i];
       (function (idx, lvName, tot, st) {
-        fetch('/api/scores', {
+        fetch(DS.API_BASE + '/api/scores', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ name: name, levelIdx: idx, levelName: lvName, total: tot, stars: st })
