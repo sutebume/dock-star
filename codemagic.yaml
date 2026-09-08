@@ -3,11 +3,19 @@ workflows:
     name: Dock Star iOS Release
     max_build_duration: 120
     instance_type: mac_mini_m2
+    integrations:
+      app_store_connect: Codemagic
     environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.dockstar.game
+      groups:
+        - apple_credentials
       vars:
         BUNDLE_ID: "com.dockstar.game"
         XCODE_SCHEME: "App"
         XCODE_WORKSPACE: "ios/App/App.xcworkspace"
+        APP_NAME: "Dock Star: Ship Docking Game"
       node: 20.8.0
       xcode: latest
       cocoapods: default
@@ -25,12 +33,17 @@ workflows:
         script: |
           cd ios/App
           pod install
+      - name: Set up code signing
+        script: xcode-project use-profiles
       - name: Build iOS IPA
         script: |
-          xcode-project use-profiles
           xcode-project build-ipa \
             --workspace "$XCODE_WORKSPACE" \
             --scheme "$XCODE_SCHEME"
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
