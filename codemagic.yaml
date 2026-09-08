@@ -30,6 +30,7 @@ workflows:
         script: |
           plutil -insert ITSAppUsesNonExemptEncryption -bool false ios/App/App/Info.plist
           plutil -insert GADApplicationIdentifier -string "ca-app-pub-9105653107748286~1268068332" ios/App/App/Info.plist
+          plutil -replace CFBundleVersion -string "$BUILD_NUMBER" ios/App/App/Info.plist
       - name: Generate iOS app icon
         script: |
           npm install @capacitor/assets
