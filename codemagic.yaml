@@ -26,9 +26,16 @@ workflows:
         script: |
           npx cap add ios
           npx cap sync ios
-      - name: Set export compliance flag
+      - name: Configure Info.plist
         script: |
           plutil -insert ITSAppUsesNonExemptEncryption -bool false ios/App/App/Info.plist
+          plutil -insert GADApplicationIdentifier -string "ca-app-pub-9105653107748286~1268068332" ios/App/App/Info.plist
+      - name: Generate iOS app icon
+        script: |
+          npm install @capacitor/assets
+          mkdir -p resources
+          sips -z 1024 1024 android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png --out resources/icon.png
+          npx @capacitor/assets generate --ios
       - name: Set up code signing
         script: xcode-project use-profiles
       - name: Build iOS IPA
