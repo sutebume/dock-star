@@ -1,9 +1,11 @@
 /* Dock Star — screens, HUD, console input, persistence. */
 window.DS = window.DS || {};
 
-DS.API_BASE = (typeof cordova !== 'undefined' || window.location.protocol === 'file:')
-  ? 'https://dockstar.openagentarena.net'
-  : '';
+DS.API_BASE = (
+  window.location.protocol === 'file:' ||
+  typeof cordova !== 'undefined' ||
+  (typeof Capacitor !== 'undefined' && typeof Capacitor.isNativePlatform === 'function' && Capacitor.isNativePlatform())
+) ? 'https://dockstar.openagentarena.net' : '';
 
 /* ---------- persistence ---------- */
 DS.state = (function () {
