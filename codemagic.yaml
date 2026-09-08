@@ -15,7 +15,7 @@ workflows:
         BUNDLE_ID: "com.dockstar.game"
         XCODE_SCHEME: "App"
         XCODE_WORKSPACE: "ios/App/App.xcworkspace"
-      node: 20.8.0
+      node: 22.13.0
       xcode: latest
       cocoapods: default
     scripts:
