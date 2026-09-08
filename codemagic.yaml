@@ -21,9 +21,10 @@ workflows:
     scripts:
       - name: Install npm dependencies
         script: npm install
+      - name: Install Capacitor iOS package
+        script: npm install @capacitor/ios
       - name: Add iOS platform if not present
         script: |
-          npm install @capacitor/ios
           if [ ! -d "ios" ]; then
             npx cap add ios
           fi
@@ -31,8 +32,10 @@ workflows:
         script: npx cap sync ios
       - name: Install CocoaPods dependencies
         script: |
-          cd ios/App
-          pod install
+          find . -name "Podfile" -not -path "*/node_modules/*" | head -5
+          PODFILE_DIR=$(find . -name "Podfile" -not -path "*/node_modules/*" | head -1 | xargs dirname)
+          echo "Podfile found at: $PODFILE_DIR"
+          cd "$PODFILE_DIR" && pod install
       - name: Set up code signing
         script: xcode-project use-profiles
       - name: Build iOS IPA
