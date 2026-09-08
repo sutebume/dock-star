@@ -26,6 +26,9 @@ workflows:
         script: |
           npx cap add ios
           npx cap sync ios
+      - name: Set export compliance flag
+        script: |
+          plutil -insert ITSAppUsesNonExemptEncryption -bool false ios/App/App/Info.plist
       - name: Set up code signing
         script: xcode-project use-profiles
       - name: Build iOS IPA
