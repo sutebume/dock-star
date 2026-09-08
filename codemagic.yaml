@@ -9,6 +9,7 @@ workflows:
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.dockstar.game
+        provisioning_profile: dock-star-appstore
       groups:
         - apple_credentials
       vars:
