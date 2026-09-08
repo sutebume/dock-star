@@ -14,10 +14,9 @@ workflows:
       vars:
         BUNDLE_ID: "com.dockstar.game"
         XCODE_SCHEME: "App"
-        XCODE_WORKSPACE: "ios/App/App.xcworkspace"
+        XCODE_PROJECT: "ios/App/App.xcodeproj"
       node: 22.13.0
       xcode: latest
-      cocoapods: default
     scripts:
       - name: Install npm dependencies and Capacitor iOS
         script: |
@@ -27,19 +26,12 @@ workflows:
         script: |
           npx cap add ios
           npx cap sync ios
-          echo "=== ios folder contents ==="
-          ls -la ios/ || echo "ios folder missing"
-          ls -la ios/App/ || echo "ios/App folder missing"
-      - name: Install CocoaPods dependencies
-        script: |
-          cd ios/App
-          pod install
       - name: Set up code signing
         script: xcode-project use-profiles
       - name: Build iOS IPA
         script: |
           xcode-project build-ipa \
-            --workspace "$XCODE_WORKSPACE" \
+            --project "$XCODE_PROJECT" \
             --scheme "$XCODE_SCHEME"
     artifacts:
       - build/ios/ipa/*.ipa
