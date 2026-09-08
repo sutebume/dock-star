@@ -19,23 +19,21 @@ workflows:
       xcode: latest
       cocoapods: default
     scripts:
-      - name: Install npm dependencies
-        script: npm install
-      - name: Install Capacitor iOS package
-        script: npm install @capacitor/ios
-      - name: Add iOS platform if not present
+      - name: Install npm dependencies and Capacitor iOS
         script: |
-          if [ ! -d "ios" ]; then
-            npx cap add ios
-          fi
-      - name: Sync Capacitor to iOS
-        script: npx cap sync ios
+          npm install
+          npm install @capacitor/ios
+      - name: Add and sync iOS platform
+        script: |
+          npx cap add ios
+          npx cap sync ios
+          echo "=== ios folder contents ==="
+          ls -la ios/ || echo "ios folder missing"
+          ls -la ios/App/ || echo "ios/App folder missing"
       - name: Install CocoaPods dependencies
         script: |
-          find . -name "Podfile" -not -path "*/node_modules/*" | head -5
-          PODFILE_DIR=$(find . -name "Podfile" -not -path "*/node_modules/*" | head -1 | xargs dirname)
-          echo "Podfile found at: $PODFILE_DIR"
-          cd "$PODFILE_DIR" && pod install
+          cd ios/App
+          pod install
       - name: Set up code signing
         script: xcode-project use-profiles
       - name: Build iOS IPA
