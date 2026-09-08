@@ -9,14 +9,12 @@ workflows:
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.dockstar.game
-        provisioning_profile: dock-star-appstore
       groups:
         - apple_credentials
       vars:
         BUNDLE_ID: "com.dockstar.game"
         XCODE_SCHEME: "App"
         XCODE_WORKSPACE: "ios/App/App.xcworkspace"
-        APP_NAME: "Dock Star: Ship Docking Game"
       node: 20.8.0
       xcode: latest
       cocoapods: default
