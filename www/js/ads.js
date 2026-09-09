@@ -3,8 +3,35 @@
 window.DS = window.DS || {};
 
 DS.ads = (function () {
-  var AD_UNIT_ID = 'ca-app-pub-9105653107748286/6116623221';
+  /* ---- TEST ADS SWITCH ----------------------------------------------
+     true  = Google's official test ad units + test mode. Always fill, so
+             interstitials are visible on TestFlight / internal builds even
+             though the app is not published yet. Shows a "Test Ad" label.
+     false = real ad units and real revenue. REQUIRED for App Store release.
+
+     Must match "initializeForTesting" in capacitor.config.json.
+     SET BOTH BACK TO false BEFORE SUBMITTING FOR REVIEW.
+  -------------------------------------------------------------------- */
+  var TEST_ADS = true;
+
+  var LIVE_AD_UNIT_ID = 'ca-app-pub-9105653107748286/6116623221';
+  /* Google's public test interstitial units — never serve real ads. */
+  var TEST_AD_UNIT_IOS = 'ca-app-pub-3940256099942544/4411468910';
+  var TEST_AD_UNIT_ANDROID = 'ca-app-pub-3940256099942544/1033173712';
+
   var adReady = false;
+
+  function platform() {
+    try {
+      if (typeof Capacitor !== 'undefined' && Capacitor.getPlatform) return Capacitor.getPlatform();
+    } catch (e) {}
+    return 'web';
+  }
+
+  function adUnitId() {
+    if (!TEST_ADS) return LIVE_AD_UNIT_ID;
+    return platform() === 'android' ? TEST_AD_UNIT_ANDROID : TEST_AD_UNIT_IOS;
+  }
 
   function getPlugin() {
     try {
@@ -23,7 +50,7 @@ DS.ads = (function () {
     var p = getPlugin();
     if (!p) return;
     adReady = false;
-    p.prepareInterstitial({ adId: AD_UNIT_ID })
+    p.prepareInterstitial({ adId: adUnitId() })
       .then(function () { adReady = true; })
       .catch(function () { adReady = false; });
   }
@@ -31,7 +58,7 @@ DS.ads = (function () {
   function init() {
     var p = getPlugin();
     if (!p) return;
-    p.initialize({ initializeForTesting: false })
+    p.initialize({ initializeForTesting: TEST_ADS })
       .then(function () { preload(); })
       .catch(function () {});
   }

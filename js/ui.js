@@ -9,7 +9,7 @@ DS.API_BASE = (
 
 /* ---------- persistence ---------- */
 DS.state = (function () {
-  var data = { name: '', stars: {}, scores: {}, coins: 0, gems: 0, skin: 'tug', owned: { tug: true }, ent: { noAds: false } };
+  var data = { name: '', stars: {}, scores: {}, coins: 0, gems: 0, skin: 'tug', owned: { tug: true }, ent: { noAds: false }, adAttempts: 0 };
   try {
     var raw = localStorage.getItem('dockstar-save');
     if (raw) {
@@ -24,6 +24,7 @@ DS.state = (function () {
         data.owned = p.owned || { tug: true };
         var e = p.ent || {};
         data.ent = { noAds: !!(e.noAds || e.midPack || e.hardPack) }; // migrate old packs → noAds
+        data.adAttempts = p.adAttempts || 0;
       }
     }
   } catch (e) {}
@@ -149,9 +150,25 @@ DS.ui = (function () {
     return '<svg width="18" height="18" viewBox="0 0 22 22"><path d="M6 3 L16 3 L20 8 L11 19 L2 8 Z" fill="#FFC93C" stroke="#E0A820" stroke-width="2" stroke-linejoin="round"/></svg>';
   }
 
-  /* ---------- interstitial ad ---------- */
+  /* ---------- interstitial ad ----------
+     Free tier sees an ad on a repeating 3-then-5 attempt cadence:
+     attempts 3, 8, 11, 16, 19, 24 ... (gaps alternate 3, 5, 3, 5).
+     The counter persists across sessions so the pace survives a relaunch. */
+  var AD_GAPS = [3, 5];
+
   function maybeShowAd() {
     if (DS.payments.adFree()) return Promise.resolve();
+
+    var d = DS.state.data;
+    d.adAttempts = (d.adAttempts || 0) + 1;
+
+    /* Walk the repeating gap cycle to find the next attempt that owes an ad. */
+    var next = 0, i = 0;
+    while (next < d.adAttempts) { next += AD_GAPS[i % AD_GAPS.length]; i++; }
+
+    if (next !== d.adAttempts) { DS.state.save(); return Promise.resolve(); }
+
+    DS.state.save();
     return DS.ads.show();
   }
 

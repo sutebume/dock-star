@@ -8,10 +8,10 @@ DS.payments = (function () {
 
   /* Fallback catalog — prices updated from store at runtime via getOfferings */
   var CATALOG = [
-    { id: 'no_ads',    type: 'nonconsumable', title: 'Remove Ads',   price: '$2.99',  gems: 0 },
-    { id: 'gems_100',  type: 'consumable',    title: '100 Gems',     price: '$1.99',  gems: 100 },
-    { id: 'gems_550',  type: 'consumable',    title: '550 Gems',     price: '$7.99',  gems: 550, badge: 'BEST VALUE' },
-    { id: 'gems_1200', type: 'consumable',    title: '1,200 Gems',   price: '$14.99', gems: 1200 }
+    { id: 'no_ads',    type: 'nonconsumable', title: 'Remove Ads',   price: '$1.99', gems: 0 },
+    { id: 'gems_100',  type: 'consumable',    title: '100 Gems',     price: '$0.99', gems: 100 },
+    { id: 'gems_550',  type: 'consumable',    title: '550 Gems',     price: '$1.39', gems: 550, badge: 'BEST VALUE' },
+    { id: 'gems_1200', type: 'consumable',    title: '1,200 Gems',   price: '$1.99', gems: 1200 }
   ];
 
   function product(id) {
