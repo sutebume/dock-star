@@ -462,8 +462,12 @@ section[hidden] { display: none; }
 .lb-table { width: 100%; border-collapse: collapse; font-size: 13px; }
 .lb-table thead tr { background: var(--navy); color: #fff; }
 .lb-table thead th { padding: 8px 6px; font-family: 'Fredoka', 'Trebuchet MS', sans-serif; font-size: 12px; letter-spacing: 0.5px; }
-.lb-table tbody tr { border-bottom: 1.5px solid #E8EEF2; }
+/* Every row needs its own light background: the screen behind is deep blue,
+   and the row text colours are chosen for a light surface. Without this the
+   odd rows render as low-contrast text straight on the blue. */
+.lb-table tbody tr { background: #FFFFFF; border-bottom: 1.5px solid #E8EEF2; }
 .lb-table tbody tr:nth-child(even) { background: #F5F8FA; }
+.lb-table { border-radius: 14px; overflow: hidden; box-shadow: 0 4px 0 rgba(22, 50, 74, 0.18); }
 .lb-mine { background: #FFFBEE !important; font-weight: 800; }
 .lb-rank { text-align: center; width: 36px; padding: 8px 4px; }
 .lb-name { font-weight: 700; color: var(--navy); padding: 8px 6px; max-width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
