@@ -283,6 +283,34 @@ DS.ui = (function () {
     }
   }
 
+  /* Store diagnostics without a Mac: tap HARBOR SHOP five times to toast
+     what RevenueCat actually returned. Invisible to players who don't know
+     the gesture; safe to leave in. */
+  var shopTaps = 0, shopTapTimer = null;
+  function shopDiagnostics() {
+    var st = DS.payments.status();
+    if (!st.native) { toast('Browser mock — no store here.'); return; }
+    var parts = [
+      st.platform + '/' + st.keyPrefix,
+      st.configured ? 'configured' : 'NOT configured',
+      'offering: ' + (st.offering || 'NONE'),
+      'products: ' + (st.packages.length ? st.packages.join(',') : 'NONE')
+    ];
+    if (st.error) parts.push('err: ' + st.error);
+    toast(parts.join(' · '));
+  }
+
+  function wireShopDiagnostics() {
+    var t = $('shop-title');
+    if (!t) return;
+    t.addEventListener('click', function () {
+      shopTaps++;
+      clearTimeout(shopTapTimer);
+      shopTapTimer = setTimeout(function () { shopTaps = 0; }, 1200);
+      if (shopTaps >= 5) { shopTaps = 0; shopDiagnostics(); }
+    });
+  }
+
   function buy(productId) {
     return DS.payments.purchase(productId).then(function (res) {
       if (res.ok) {
@@ -667,6 +695,8 @@ DS.ui = (function () {
       DS.sfx.toggleAmbience();
       paintBreeze();
     });
+
+    wireShopDiagnostics();
 
     $('btn-mute').addEventListener('click', function () {
       var m = DS.sfx.toggleMute();
