@@ -10,8 +10,8 @@ DS.payments = (function () {
   var CATALOG = [
     { id: 'no_ads',    type: 'nonconsumable', title: 'Remove Ads',   price: '$1.99', gems: 0 },
     { id: 'gems_100',  type: 'consumable',    title: '100 Gems',     price: '$0.99', gems: 100 },
-    { id: 'gems_550',  type: 'consumable',    title: '550 Gems',     price: '$1.39', gems: 550, badge: 'BEST VALUE' },
-    { id: 'gems_1200', type: 'consumable',    title: '1,200 Gems',   price: '$1.99', gems: 1200 }
+    { id: 'gems_550',  type: 'consumable',    title: '550 Gems',     price: '$1.39', gems: 550 },
+    { id: 'gems_1200', type: 'consumable',    title: '1,200 Gems',   price: '$1.99', gems: 1200, badge: 'BEST VALUE' }
   ];
 
   function product(id) {
