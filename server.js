@@ -6,6 +6,7 @@ var path = require('path');
 var ROOT = __dirname;
 var PORT = process.env.PORT || 8347;
 var SCORES_FILE = path.join(ROOT, 'scores.json');
+var profanity = require('./js/profanity.js');
 
 var MIME = {
   '.html': 'text/html; charset=utf-8',
@@ -68,6 +69,13 @@ http.createServer(function (req, res) {
         var total    = Math.max(0, parseInt(d.total)    || 0);
         var stars    = Math.min(3, Math.max(0, parseInt(d.stars) || 0));
         var lvName   = String(d.levelName || '').slice(0, 40);
+        /* Leaderboard names are user-generated content shown to every
+           player; reject anything the filter flags. */
+        if (name && !profanity.isClean(name)) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end('{"ok":false,"error":"name_rejected"}');
+          return;
+        }
         if (name && total > 0) {
           var entries = loadScores();
           entries.push({ name: name, levelIdx: levelIdx, levelName: lvName, total: total, stars: stars, ts: Date.now() });

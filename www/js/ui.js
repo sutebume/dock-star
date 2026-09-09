@@ -651,6 +651,13 @@ DS.ui = (function () {
     $('btn-name-go').addEventListener('click', function () {
       var val = $('name-input').value.trim().replace(/[<>"]/g, '').slice(0, 20);
       if (!val) { $('name-input').focus(); return; }
+      /* Names appear on the public leaderboard; the server rejects unclean
+         ones too, this is just immediate feedback. */
+      if (DS.profanity && !DS.profanity.isClean(val)) {
+        toast('Please choose a different captain name.');
+        $('name-input').focus();
+        return;
+      }
       DS.sfx.click();
       DS.state.data.name = val;
       DS.state.save();
