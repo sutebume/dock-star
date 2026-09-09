@@ -12,7 +12,7 @@ DS.ads = (function () {
      Must match "initializeForTesting" in capacitor.config.json.
      SET BOTH BACK TO false BEFORE SUBMITTING FOR REVIEW.
   -------------------------------------------------------------------- */
-  var TEST_ADS = true;
+  var TEST_ADS = false;
 
   var LIVE_AD_UNIT_ID = 'ca-app-pub-9105653107748286/6116623221';
   /* Google's public test interstitial units — never serve real ads. */

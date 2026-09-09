@@ -10,7 +10,7 @@
     "AdMob": {
       "appIdAndroid": "ca-app-pub-9105653107748286~6497942770",
       "appIdIos": "ca-app-pub-9105653107748286~1268068332",
-      "initializeForTesting": true
+      "initializeForTesting": false
     }
   }
 }
