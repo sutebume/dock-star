@@ -2,12 +2,13 @@
   "name": "dock-star",
   "version": "0.1.0",
   "private": true,
-  "description": "Dock Star — playful ship docking & undocking game",
+  "description": "Dock Star \u2014 playful ship docking & undocking game",
   "scripts": {
     "start": "node server.js",
     "build:www": "node scripts/build-www.js",
     "sync": "npm run build:www && npx cap sync",
-    "android": "npm run sync && npx cap open android"
+    "android": "npm run sync && npx cap open android",
+    "check:ads": "node scripts/check-ads-mode.js"
   },
   "dependencies": {
     "@capacitor-community/admob": "^8.1.0",

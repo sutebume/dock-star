@@ -22,6 +22,9 @@ workflows:
         script: |
           npm install
           npm install @capacitor/ios
+      - name: Check ad mode (blocks accidental test-ads release)
+        script: |
+          node scripts/check-ads-mode.js
       - name: Add and sync iOS platform
         script: |
           npm run build:www
