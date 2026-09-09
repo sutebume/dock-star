@@ -259,8 +259,12 @@ DS.payments = (function () {
     purchase: function (id) {
       if (getPlugin()) {
         return rcPurchase(id).catch(function (err) {
-          /* err.userCancelled is true when the user dismisses the Play sheet */
-          var cancelled = err && err.userCancelled;
+          /* Dismissing the sheet reports userCancelled on some platforms and
+             only PurchasesErrorCode 1 (PURCHASE_CANCELLED) on others. */
+          var code = err && (err.code !== undefined ? err.code : err);
+          var cancelled = !!(err && err.userCancelled) ||
+                          String(code) === '1' ||
+                          String(code) === 'PURCHASE_CANCELLED';
           return { ok: false, error: cancelled ? 'cancelled' : String(err && err.code || err || 'purchase_failed') };
         });
       }

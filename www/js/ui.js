@@ -247,6 +247,7 @@ DS.ui = (function () {
      Anything unrecognised falls through with its raw code so a tester can
      report exactly what went wrong instead of seeing nothing happen. */
   var PURCHASE_ERRORS = {
+    0:  'Something went wrong. Please try again.',
     2:  'The store is unavailable right now. Try again shortly.',
     3:  'Purchases are disabled on this device.',
     4:  'That purchase was not valid.',
