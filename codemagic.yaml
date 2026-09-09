@@ -35,6 +35,21 @@ workflows:
           npm run build:www
           npx cap add ios
           npx cap sync ios
+      - name: Restrict to iPhone only
+        script: |
+          # Capacitor generates a universal app (device family "1,2"). Shipping
+          # iPhone-only avoids untested iPad layouts and the iPad screenshot
+          # requirement. iPad support can be added later; Apple does not allow
+          # removing device support from an already-published app.
+          PBX=ios/App/App.xcodeproj/project.pbxproj
+          sed -i '' 's/TARGETED_DEVICE_FAMILY = "1,2"/TARGETED_DEVICE_FAMILY = "1"/g' "$PBX"
+          if grep -q 'TARGETED_DEVICE_FAMILY = "1,2"' "$PBX"; then
+            echo "ERROR: device family still universal - Capacitor project format changed"
+            grep -n 'TARGETED_DEVICE_FAMILY' "$PBX"
+            exit 1
+          fi
+          echo "Device family set to iPhone only:"
+          grep -n 'TARGETED_DEVICE_FAMILY' "$PBX"
       - name: Configure Info.plist
         script: |
           plutil -insert ITSAppUsesNonExemptEncryption -bool false ios/App/App/Info.plist
