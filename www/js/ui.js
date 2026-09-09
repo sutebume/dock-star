@@ -747,5 +747,14 @@ DS.ui = (function () {
     }
   }
 
-  return { init: init, show: show, startLevel: startLevel, _game: function () { return game; } };
+  return {
+    init: init,
+    show: show,
+    startLevel: startLevel,
+    /* Called when store prices arrive after the shop has already rendered. */
+    refreshShop: function () {
+      if (!$('screen-shop').hidden) renderShop();
+    },
+    _game: function () { return game; }
+  };
 })();

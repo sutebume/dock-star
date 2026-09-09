@@ -69,37 +69,84 @@ DS.payments = (function () {
      Read it with DS.payments.status() from Safari Web Inspector. */
   var diag = { configured: false, offerings: null, packages: [], error: null };
 
-  function rcInit() {
+  /* configure() must happen before any other Purchases call. DOMContentLoaded
+     can fire before Capacitor has registered its native plugins, so doing it
+     once at boot is unreliable: getPlugin() returns null, we bail, and every
+     later purchase fails with CONFIGURATION_ERROR. Configure lazily instead,
+     memoised, and have every entry point await it. */
+  var configuring = null;
+
+  function ensureConfigured() {
+    if (configuring) return configuring;
     var p = getPlugin();
-    if (!p) return;
-    p.configure({ apiKey: rcApiKey() })
-      .then(function () { diag.configured = true; })
-      .catch(function (e) { diag.error = 'configure: ' + (e && e.message || e); });
-    /* Restore entitlements silently on launch */
-    p.getCustomerInfo()
-      .then(function (r) { applyCustomerInfo(r.customerInfo); })
-      .catch(function (e) { diag.error = 'getCustomerInfo: ' + (e && e.message || e); });
-    /* Pre-fetch offerings to get real localized prices */
-    p.getOfferings()
-      .then(function (r) {
-        diag.offerings = r && r.current ? (r.current.identifier || 'current') : 'none';
-        var pkgs = (r.current && r.current.availablePackages) || [];
-        diag.packages = pkgs.map(function (pkg) {
-          return (pkg.product && pkg.product.identifier) || '?';
-        });
-        pkgs.forEach(function (pkg) {
-          var pid = pkg.product && pkg.product.identifier;
-          var cat = product(pid);
-          if (cat && pkg.product.priceString) cat.price = pkg.product.priceString;
-        });
+    if (!p) {
+      diag.error = 'plugin not available';
+      return Promise.reject('no_plugin');
+    }
+    configuring = p.configure({ apiKey: rcApiKey() })
+      .then(function () {
+        diag.configured = true;
+        diag.error = null;
       })
-      .catch(function (e) { diag.error = 'getOfferings: ' + (e && e.message || e); });
+      .catch(function (e) {
+        configuring = null;                       /* allow a later retry */
+        diag.error = 'configure: ' + ((e && e.message) || e);
+        throw e;
+      });
+    return configuring;
+  }
+
+  function refreshOfferings() {
+    var p = getPlugin();
+    return p.getOfferings().then(function (r) {
+      diag.offerings = r && r.current ? (r.current.identifier || 'current') : 'none';
+      var pkgs = (r.current && r.current.availablePackages) || [];
+      diag.packages = pkgs.map(function (pkg) {
+        return (pkg.product && pkg.product.identifier) || '?';
+      });
+      pkgs.forEach(function (pkg) {
+        var pid = pkg.product && pkg.product.identifier;
+        var cat = product(pid);
+        if (cat && pkg.product.priceString) cat.price = pkg.product.priceString;
+      });
+      return r;
+    });
+  }
+
+  function rcInit() {
+    if (!getPlugin()) {
+      /* Bridge not up yet — retry briefly rather than giving up silently. */
+      diag.error = 'plugin not ready at init, retrying';
+      var tries = 0;
+      var t = setInterval(function () {
+        tries++;
+        if (getPlugin()) { clearInterval(t); rcInit(); }
+        else if (tries >= 20) { clearInterval(t); diag.error = 'plugin never appeared'; }
+      }, 250);
+      return;
+    }
+
+    ensureConfigured().then(function () {
+      var p = getPlugin();
+      /* Restore entitlements silently on launch */
+      p.getCustomerInfo()
+        .then(function (r) { applyCustomerInfo(r.customerInfo); })
+        .catch(function (e) { diag.error = 'getCustomerInfo: ' + ((e && e.message) || e); });
+      /* Pre-fetch offerings to get real localized prices */
+      return refreshOfferings();
+    }).then(function () {
+      if (DS.ui && DS.ui.refreshShop) DS.ui.refreshShop();
+    }).catch(function (e) {
+      if (!diag.error) diag.error = 'init: ' + ((e && e.message) || e);
+    });
   }
 
   function rcPurchase(id) {
     var p = getPlugin();
     if (!p) return Promise.reject('no_plugin');
-    return p.getOfferings().then(function (r) {
+    return ensureConfigured().then(function () {
+      return p.getOfferings();
+    }).then(function (r) {
       var pkgs = (r.current && r.current.availablePackages) || [];
       var pkg = null;
       for (var i = 0; i < pkgs.length; i++) {
@@ -121,7 +168,9 @@ DS.payments = (function () {
   function rcRestore() {
     var p = getPlugin();
     if (!p) return Promise.reject('no_plugin');
-    return p.restorePurchases().then(function (r) {
+    return ensureConfigured().then(function () {
+      return p.restorePurchases();
+    }).then(function (r) {
       applyCustomerInfo(r.customerInfo);
       return { ok: true, restored: r.customerInfo ? 1 : 0 };
     });
