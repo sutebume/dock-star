@@ -35,7 +35,13 @@ workflows:
         script: |
           npm install @capacitor/assets
           mkdir -p resources
-          sips -z 1024 1024 android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png --out resources/icon.png
+          # App Store icons must be exactly 1024x1024 with NO alpha channel.
+          # Source is 1081x1024, so centre-crop to square, then flatten alpha
+          # via a JPEG round-trip before converting back to PNG.
+          sips -c 1024 1024 dock-star-2-ios-icon.png --out resources/icon-square.png
+          sips -s format jpeg -s formatOptions best resources/icon-square.png --out resources/icon-flat.jpg
+          sips -s format png resources/icon-flat.jpg --out resources/icon.png
+          rm -f resources/icon-square.png resources/icon-flat.jpg
           npx @capacitor/assets generate --ios
       - name: Set up code signing
         script: xcode-project use-profiles
