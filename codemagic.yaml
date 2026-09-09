@@ -11,6 +11,11 @@ workflows:
         bundle_identifier: com.dockstar.game
       groups:
         - apple_credentials
+        # Holds ALLOW_TEST_ADS. Set it to "true" in the Codemagic UI to build
+        # with Google placeholder ads (visible on TestFlight); set it to
+        # "false" for a release build, which then forces TEST_ADS=false in
+        # js/ads.js. See scripts/check-ads-mode.js.
+        - ads_testing
       vars:
         BUNDLE_ID: "com.dockstar.game"
         XCODE_SCHEME: "App"
