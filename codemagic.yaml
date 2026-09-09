@@ -24,6 +24,7 @@ workflows:
           npm install @capacitor/ios
       - name: Add and sync iOS platform
         script: |
+          npm run build:www
           npx cap add ios
           npx cap sync ios
       - name: Configure Info.plist
