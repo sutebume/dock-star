@@ -69,6 +69,10 @@ DS.ui = (function () {
     var screens = ['screen-home', 'screen-map', 'screen-shop', 'screen-game', 'screen-name', 'screen-leaderboard'];
     screens.forEach(function (s) { $(s).hidden = (s !== id); });
     if (id !== 'screen-game' && game) { game.stop(); }
+
+    /* Sea breeze plays only on the Voyage Map. */
+    if (id === 'screen-map') DS.sfx.startAmbience(); else DS.sfx.stopAmbience();
+
     if (id === 'screen-home') renderHome();
     if (id === 'screen-map') renderMap();
     if (id === 'screen-shop') renderShop();
@@ -597,9 +601,32 @@ DS.ui = (function () {
     });
     $('btn-pause-retry').addEventListener('click', function () { DS.sfx.click(); startLevel(currentLevel); });
     $('btn-pause-map').addEventListener('click', function () { DS.sfx.click(); show('screen-map'); });
+    function breezeSvg(on) {
+      /* three wind streaks; struck through when off */
+      return '<g stroke="#16324A" stroke-width="2.2" fill="none" stroke-linecap="round">' +
+        '<path d="M2 8 H13 a2.6 2.6 0 1 0 -2.6 -2.6"/>' +
+        '<path d="M2 12 H17 a2.6 2.6 0 1 1 -2.6 2.6"/>' +
+        '<path d="M2 16 H11"/>' +
+        '</g>' +
+        (on ? '' : '<path d="M4 20 L20 4" stroke="#C74534" stroke-width="2.6" stroke-linecap="round"/>');
+    }
+    function paintBreeze() {
+      var on = DS.sfx.ambienceOn();
+      $('breeze-icon').innerHTML = breezeSvg(on);
+      $('btn-breeze').setAttribute('aria-pressed', on ? 'true' : 'false');
+    }
+    paintBreeze();
+    $('btn-breeze').addEventListener('click', function () {
+      DS.sfx.click();
+      DS.sfx.toggleAmbience();
+      paintBreeze();
+    });
+
     $('btn-mute').addEventListener('click', function () {
       var m = DS.sfx.toggleMute();
       $('mute-label').textContent = m ? 'SOUND: OFF' : 'SOUND: ON';
+      /* unmuting while the map is open should bring the breeze back */
+      if (!m && !$('screen-map').hidden) DS.sfx.startAmbience();
     });
     $('btn-retry').addEventListener('click', function () {
       DS.sfx.click();
