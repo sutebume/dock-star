@@ -242,21 +242,43 @@ DS.ui = (function () {
 
   /* ---------- shop ---------- */
   /* Map RevenueCat / StoreKit failures onto something a player can act on.
+     @revenuecat/purchases-capacitor reports NUMERIC PurchasesErrorCode
+     values, so match on those; the string forms are kept for other SDKs.
      Anything unrecognised falls through with its raw code so a tester can
      report exactly what went wrong instead of seeing nothing happen. */
+  var PURCHASE_ERRORS = {
+    2:  'The store is unavailable right now. Try again shortly.',
+    3:  'Purchases are disabled on this device.',
+    4:  'That purchase was not valid.',
+    5:  'That item is not available for purchase yet.',
+    6:  'You already own this — try Restore Purchases.',
+    7:  'This purchase belongs to another account.',
+    10: 'No connection — check your network and try again.',
+    11: 'Store credentials are invalid.',
+    19: 'This account cannot make purchases.',
+    20: 'Purchase pending approval.',
+    23: 'The store is not set up yet. Please try again later.',
+    24: 'Purchases are not supported on this device.'
+  };
+
   function purchaseMessage(err) {
     var e = String(err || '');
     if (e.indexOf('product_not_found') === 0) {
       return 'That item is not available from the store yet.';
     }
     if (e.indexOf('no_plugin') === 0) return 'Purchases are not available here.';
+
+    var n = parseInt(e, 10);
+    if (!isNaN(n) && PURCHASE_ERRORS[n]) return PURCHASE_ERRORS[n];
+
     switch (e) {
-      case 'PURCHASE_NOT_ALLOWED_ERROR': return 'Purchases are disabled on this device.';
-      case 'PAYMENT_PENDING_ERROR':      return 'Purchase pending approval.';
-      case 'NETWORK_ERROR':              return 'No connection — check your network and try again.';
-      case 'STORE_PROBLEM_ERROR':        return 'The store is unavailable right now. Try again shortly.';
-      case 'PRODUCT_ALREADY_PURCHASED_ERROR': return 'You already own this — try Restore Purchases.';
-      case 'RECEIPT_ALREADY_IN_USE_ERROR':    return 'This purchase belongs to another account.';
+      case 'PURCHASE_NOT_ALLOWED_ERROR': return PURCHASE_ERRORS[3];
+      case 'PAYMENT_PENDING_ERROR':      return PURCHASE_ERRORS[20];
+      case 'NETWORK_ERROR':              return PURCHASE_ERRORS[10];
+      case 'STORE_PROBLEM_ERROR':        return PURCHASE_ERRORS[2];
+      case 'PRODUCT_ALREADY_PURCHASED_ERROR': return PURCHASE_ERRORS[6];
+      case 'RECEIPT_ALREADY_IN_USE_ERROR':    return PURCHASE_ERRORS[7];
+      case 'CONFIGURATION_ERROR':             return PURCHASE_ERRORS[23];
       default: return 'Purchase failed (' + (e || 'unknown') + ')';
     }
   }
