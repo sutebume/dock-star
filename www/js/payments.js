@@ -75,7 +75,34 @@ DS.payments = (function () {
      later purchase fails with CONFIGURATION_ERROR. Configure lazily instead,
      memoised, and have every entry point await it. */
   var configuring = null;
+  var CONFIGURE_TIMEOUT_MS = 2500;
+  var OFFERINGS_TIMEOUT_MS = 12000;
 
+  /* A bridge call that never settles must not hang the shop forever. */
+  function withTimeout(promise, ms, label) {
+    return new Promise(function (resolve, reject) {
+      var done = false;
+      var t = setTimeout(function () {
+        if (done) return;
+        done = true;
+        diag.error = label + ': timed out';
+        reject(label + '_timeout');
+      }, ms);
+      promise.then(function (v) {
+        if (done) return;
+        done = true; clearTimeout(t); resolve(v);
+      }, function (e) {
+        if (done) return;
+        done = true; clearTimeout(t); reject(e);
+      });
+    });
+  }
+
+  /* configure() applies natively as soon as the bridge receives it, but over
+     the raw Capacitor bridge its promise does not reliably settle. Awaiting
+     it outright leaves purchases hanging forever, so race it against a
+     timeout and carry on: a later getOfferings() is the real proof that
+     configuration took. */
   function ensureConfigured() {
     if (configuring) return configuring;
     var p = getPlugin();
@@ -83,23 +110,43 @@ DS.payments = (function () {
       diag.error = 'plugin not available';
       return Promise.reject('no_plugin');
     }
-    configuring = p.configure({ apiKey: rcApiKey() })
-      .then(function () {
-        diag.configured = true;
-        diag.error = null;
-      })
-      .catch(function (e) {
-        configuring = null;                       /* allow a later retry */
-        diag.error = 'configure: ' + ((e && e.message) || e);
-        throw e;
-      });
+
+    configuring = new Promise(function (resolve) {
+      var done = false;
+      function finish(how) {
+        if (done) return;
+        done = true;
+        diag.configured = how;                    /* 'ok' | 'assumed' */
+        resolve();
+      }
+
+      setTimeout(function () { finish('assumed'); }, CONFIGURE_TIMEOUT_MS);
+
+      try {
+        var r = p.configure({ apiKey: rcApiKey() });
+        if (r && typeof r.then === 'function') {
+          r.then(function () { finish('ok'); },
+                 function (e) {
+                   diag.error = 'configure: ' + ((e && e.message) || e);
+                   finish('assumed');
+                 });
+        } else {
+          finish('ok');                           /* synchronous plugin */
+        }
+      } catch (e) {
+        diag.error = 'configure threw: ' + ((e && e.message) || e);
+        finish('assumed');
+      }
+    });
+
     return configuring;
   }
 
   function refreshOfferings() {
     var p = getPlugin();
-    return p.getOfferings().then(function (r) {
+    return withTimeout(p.getOfferings(), OFFERINGS_TIMEOUT_MS, 'getOfferings').then(function (r) {
       diag.offerings = r && r.current ? (r.current.identifier || 'current') : 'none';
+      diag.error = null;                 /* offerings resolved: clear stale errors */
       var pkgs = (r.current && r.current.availablePackages) || [];
       diag.packages = pkgs.map(function (pkg) {
         return (pkg.product && pkg.product.identifier) || '?';
@@ -145,7 +192,7 @@ DS.payments = (function () {
     var p = getPlugin();
     if (!p) return Promise.reject('no_plugin');
     return ensureConfigured().then(function () {
-      return p.getOfferings();
+      return withTimeout(p.getOfferings(), OFFERINGS_TIMEOUT_MS, 'getOfferings');
     }).then(function (r) {
       var pkgs = (r.current && r.current.availablePackages) || [];
       var pkg = null;

@@ -292,7 +292,7 @@ DS.ui = (function () {
     if (!st.native) { toast('Browser mock — no store here.'); return; }
     var parts = [
       st.platform + '/' + st.keyPrefix,
-      st.configured ? 'configured' : 'NOT configured',
+      st.configured ? ('configured:' + st.configured) : 'NOT configured',
       'offering: ' + (st.offering || 'NONE'),
       'products: ' + (st.packages.length ? st.packages.join(',') : 'NONE')
     ];
