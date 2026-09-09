@@ -241,9 +241,33 @@ DS.ui = (function () {
   }
 
   /* ---------- shop ---------- */
+  /* Map RevenueCat / StoreKit failures onto something a player can act on.
+     Anything unrecognised falls through with its raw code so a tester can
+     report exactly what went wrong instead of seeing nothing happen. */
+  function purchaseMessage(err) {
+    var e = String(err || '');
+    if (e.indexOf('product_not_found') === 0) {
+      return 'That item is not available from the store yet.';
+    }
+    if (e.indexOf('no_plugin') === 0) return 'Purchases are not available here.';
+    switch (e) {
+      case 'PURCHASE_NOT_ALLOWED_ERROR': return 'Purchases are disabled on this device.';
+      case 'PAYMENT_PENDING_ERROR':      return 'Purchase pending approval.';
+      case 'NETWORK_ERROR':              return 'No connection — check your network and try again.';
+      case 'STORE_PROBLEM_ERROR':        return 'The store is unavailable right now. Try again shortly.';
+      case 'PRODUCT_ALREADY_PURCHASED_ERROR': return 'You already own this — try Restore Purchases.';
+      case 'RECEIPT_ALREADY_IN_USE_ERROR':    return 'This purchase belongs to another account.';
+      default: return 'Purchase failed (' + (e || 'unknown') + ')';
+    }
+  }
+
   function buy(productId) {
     return DS.payments.purchase(productId).then(function (res) {
-      if (res.ok) renderShop();
+      if (res.ok) {
+        renderShop();
+      } else if (res.error !== 'cancelled') {
+        toast(purchaseMessage(res.error));
+      }
       return res;
     });
   }

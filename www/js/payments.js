@@ -65,25 +65,35 @@ DS.payments = (function () {
     DS.state.save();
   }
 
+  /* Last known store state, for diagnosing a shop that will not sell.
+     Read it with DS.payments.status() from Safari Web Inspector. */
+  var diag = { configured: false, offerings: null, packages: [], error: null };
+
   function rcInit() {
     var p = getPlugin();
     if (!p) return;
-    p.configure({ apiKey: rcApiKey() }).catch(function () {});
+    p.configure({ apiKey: rcApiKey() })
+      .then(function () { diag.configured = true; })
+      .catch(function (e) { diag.error = 'configure: ' + (e && e.message || e); });
     /* Restore entitlements silently on launch */
     p.getCustomerInfo()
       .then(function (r) { applyCustomerInfo(r.customerInfo); })
-      .catch(function () {});
+      .catch(function (e) { diag.error = 'getCustomerInfo: ' + (e && e.message || e); });
     /* Pre-fetch offerings to get real localized prices */
     p.getOfferings()
       .then(function (r) {
+        diag.offerings = r && r.current ? (r.current.identifier || 'current') : 'none';
         var pkgs = (r.current && r.current.availablePackages) || [];
+        diag.packages = pkgs.map(function (pkg) {
+          return (pkg.product && pkg.product.identifier) || '?';
+        });
         pkgs.forEach(function (pkg) {
           var pid = pkg.product && pkg.product.identifier;
           var cat = product(pid);
           if (cat && pkg.product.priceString) cat.price = pkg.product.priceString;
         });
       })
-      .catch(function () {});
+      .catch(function (e) { diag.error = 'getOfferings: ' + (e && e.message || e); });
   }
 
   function rcPurchase(id) {
@@ -178,6 +188,22 @@ DS.payments = (function () {
        are the hardcoded fallbacks rather than real store prices. */
     isMock: function () {
       return !getPlugin();
+    },
+
+    /* Store diagnostics: whether RevenueCat configured, which offering came
+       back, which product ids it carries, and the last error. */
+    status: function () {
+      return {
+        native: !!getPlugin(),
+        platform: (function () {
+          try { return Capacitor.getPlatform(); } catch (e) { return 'web'; }
+        })(),
+        keyPrefix: rcApiKey().split('_')[0],
+        configured: diag.configured,
+        offering: diag.offerings,
+        packages: diag.packages,
+        error: diag.error
+      };
     },
 
     init: function () {
