@@ -248,6 +248,11 @@ DS.ui = (function () {
     $('shop-coins').textContent = DS.state.data.coins.toLocaleString();
     $('shop-gems').textContent = DS.state.data.gems.toLocaleString();
 
+    /* The "test store" note is only true in the browser mock. On device the
+       store is real, so hide it there. */
+    var mockNote = $('shop-mock-note');
+    if (mockNote) mockNote.hidden = !DS.payments.isMock();
+
     // No Ads
     var packs = $('shop-packs');
     packs.innerHTML = '';

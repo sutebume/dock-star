@@ -174,6 +174,12 @@ DS.payments = (function () {
       return !!DS.state.data.ent.noAds;
     },
 
+    /* True in the browser, where purchases are faked and the prices shown
+       are the hardcoded fallbacks rather than real store prices. */
+    isMock: function () {
+      return !getPlugin();
+    },
+
     init: function () {
       document.getElementById('sheet-buy').addEventListener('click', function () { closeSheet(true); });
       document.getElementById('sheet-cancel').addEventListener('click', function () { closeSheet(false); });
