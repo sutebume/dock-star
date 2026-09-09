@@ -258,7 +258,7 @@ DS.ui = (function () {
     noAdsCard.innerHTML =
       '<div class="pack-info">' +
       '<div class="pack-name">Remove Ads</div>' +
-      '<div class="pack-levels">All 18 levels · ad-free forever</div>' +
+      '<div class="pack-levels">All ' + DS.LEVELS.length + ' levels · ad-free forever</div>' +
       '</div>' +
       (noAdsOwned
         ? '<span class="noads-owned">ACTIVE</span>'

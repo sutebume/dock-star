@@ -4,7 +4,22 @@
 window.DS = window.DS || {};
 
 DS.payments = (function () {
-  var RC_API_KEY = 'goog_EibuKkyywsysRVwbPsVGzoTXFHH';
+  /* RevenueCat PUBLIC SDK keys — platform specific. Configuring with the
+     wrong platform's key makes configure() fail, so getOfferings() returns
+     nothing and no purchase can complete. These are public keys, safe to
+     ship in the app bundle; the private .p8 lives only in RevenueCat. */
+  var RC_API_KEYS = {
+    ios: 'appl_LrytraTOjdTSvMfRbtcMjkJQsDO',
+    android: 'goog_EibuKkyywsysRVwbPsVGzoTXFHH'
+  };
+
+  function rcApiKey() {
+    var plat = 'android';
+    try {
+      if (typeof Capacitor !== 'undefined' && Capacitor.getPlatform) plat = Capacitor.getPlatform();
+    } catch (e) {}
+    return RC_API_KEYS[plat] || RC_API_KEYS.android;
+  }
 
   /* Fallback catalog — prices updated from store at runtime via getOfferings */
   var CATALOG = [
@@ -53,7 +68,7 @@ DS.payments = (function () {
   function rcInit() {
     var p = getPlugin();
     if (!p) return;
-    p.configure({ apiKey: RC_API_KEY }).catch(function () {});
+    p.configure({ apiKey: rcApiKey() }).catch(function () {});
     /* Restore entitlements silently on launch */
     p.getCustomerInfo()
       .then(function (r) { applyCustomerInfo(r.customerInfo); })
