@@ -57,15 +57,12 @@ workflows:
           plutil -replace CFBundleVersion -string "$BUILD_NUMBER" ios/App/App/Info.plist
       - name: Generate iOS app icon
         script: |
+          # @capacitor/assets reads assets/, which is committed and holds the
+          # same 1024x1024 sources Android uses, so both platforms cannot drift
+          # apart. assets/icon.png is already flattened to RGB - the App Store
+          # rejects icons with an alpha channel.
           npm install @capacitor/assets
-          mkdir -p resources
-          # App Store icons must be exactly 1024x1024 with NO alpha channel.
-          # Source is 1081x1024, so centre-crop to square, then flatten alpha
-          # via a JPEG round-trip before converting back to PNG.
-          sips -c 1024 1024 dock-star-2-ios-icon.png --out resources/icon-square.png
-          sips -s format jpeg -s formatOptions best resources/icon-square.png --out resources/icon-flat.jpg
-          sips -s format png resources/icon-flat.jpg --out resources/icon.png
-          rm -f resources/icon-square.png resources/icon-flat.jpg
+          node -e "const d=require('fs').readFileSync('assets/icon.png'); if(d[25]!==2){console.error('assets/icon.png must have no alpha channel (colortype 2), found '+d[25]);process.exit(1)} console.log('icon source OK: no alpha')"
           npx @capacitor/assets generate --ios
       - name: Set up code signing
         script: xcode-project use-profiles
