@@ -5,3 +5,10 @@ android/build/
 *.keystore
 *.p8
 *.jks
+
+# IDE
+android/.idea/
+.idea/
+
+# Local signing credentials - never commit
+android/keystore.properties
