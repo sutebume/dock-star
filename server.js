@@ -15,7 +15,8 @@ var MIME = {
   '.json': 'application/json',
   '.png': 'image/png',
   '.svg': 'image/svg+xml',
-  '.ico': 'image/x-icon'
+  '.ico': 'image/x-icon',
+  '.txt': 'text/plain; charset=utf-8'
 };
 
 /* ---- scores helpers ---- */
@@ -105,6 +106,11 @@ http.createServer(function (req, res) {
   if (urlPath === '/') urlPath = '/index.html';
   var file = path.normalize(path.join(ROOT, urlPath));
   if (!file.startsWith(ROOT)) { res.writeHead(403); res.end(); return; }
+  /* Never serve dotfiles/dot-dirs: the VPS runs from a git clone, so
+     without this /.git/config and the whole repo history were public. */
+  if (urlPath.split('/').some(function (seg) { return seg.charAt(0) === '.'; })) {
+    res.writeHead(404); res.end('not found'); return;
+  }
   fs.readFile(file, function (err, data) {
     if (err) { res.writeHead(404); res.end('not found'); return; }
     res.writeHead(200, { 'Content-Type': MIME[path.extname(file)] || 'application/octet-stream' });
