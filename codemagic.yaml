@@ -20,6 +20,10 @@ workflows:
         BUNDLE_ID: "com.dockstar.game"
         XCODE_SCHEME: "App"
         XCODE_PROJECT: "ios/App/App.xcodeproj"
+        # App Store version string. Bump for every release submitted to App
+        # Review; App Store Connect needs a new version to edit locked
+        # listing fields such as the Marketing URL.
+        APP_VERSION: "1.0.1"
       node: 22.13.0
       xcode: latest
     scripts:
@@ -55,6 +59,8 @@ workflows:
           plutil -insert ITSAppUsesNonExemptEncryption -bool false ios/App/App/Info.plist
           plutil -insert GADApplicationIdentifier -string "ca-app-pub-9105653107748286~1268068332" ios/App/App/Info.plist
           plutil -replace CFBundleVersion -string "$BUILD_NUMBER" ios/App/App/Info.plist
+          plutil -replace CFBundleShortVersionString -string "$APP_VERSION" ios/App/App/Info.plist
+          echo "Version $APP_VERSION ($BUILD_NUMBER)"
       - name: Generate iOS app icon
         script: |
           # @capacitor/assets reads assets/, which is committed and holds the
