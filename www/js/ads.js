@@ -14,7 +14,12 @@ DS.ads = (function () {
   -------------------------------------------------------------------- */
   var TEST_ADS = false;
 
-  var LIVE_AD_UNIT_ID = 'ca-app-pub-9105653107748286/6116623221';
+  /* Live interstitial units, one per platform. Each unit belongs to that
+     platform's AdMob app, so it must match the app ID the native SDK
+     starts with (Info.plist / AndroidManifest). Requesting the other
+     platform's unit misattributes the traffic and hurts fill. */
+  var LIVE_AD_UNIT_IOS = 'ca-app-pub-9105653107748286/7147097856';
+  var LIVE_AD_UNIT_ANDROID = 'ca-app-pub-9105653107748286/6116623221';
   /* Google's public test interstitial units — never serve real ads. */
   var TEST_AD_UNIT_IOS = 'ca-app-pub-3940256099942544/4411468910';
   var TEST_AD_UNIT_ANDROID = 'ca-app-pub-3940256099942544/1033173712';
@@ -29,8 +34,9 @@ DS.ads = (function () {
   }
 
   function adUnitId() {
-    if (!TEST_ADS) return LIVE_AD_UNIT_ID;
-    return platform() === 'android' ? TEST_AD_UNIT_ANDROID : TEST_AD_UNIT_IOS;
+    var android = platform() === 'android';
+    if (TEST_ADS) return android ? TEST_AD_UNIT_ANDROID : TEST_AD_UNIT_IOS;
+    return android ? LIVE_AD_UNIT_ANDROID : LIVE_AD_UNIT_IOS;
   }
 
   function getPlugin() {
