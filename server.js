@@ -26,7 +26,8 @@ function loadScores() {
 function saveScores(arr) {
   try { fs.writeFileSync(SCORES_FILE, JSON.stringify(arr)); } catch (e) {}
 }
-function buildLeaderboard(entries) {
+/* Every player, best score per level summed, ranked 1..N. */
+function rankAll(entries) {
   var best = {};
   entries.forEach(function (e) {
     if (!best[e.name]) best[e.name] = {};
@@ -40,7 +41,35 @@ function buildLeaderboard(entries) {
     return { name: name, levels: lvs.length, score: score, perfect: perfect };
   });
   rows.sort(function (a, b) { return b.score - a.score; });
-  return rows.slice(0, 20);
+  rows.forEach(function (r, i) { r.rank = i + 1; });
+  return rows;
+}
+
+var TOP_N = 20;
+var BOTTOM_N = 3;
+
+/* Legacy shape for app builds that only know GET /api/scores: a bare array. */
+function buildLeaderboard(entries) {
+  return rankAll(entries).slice(0, TOP_N).map(function (r) {
+    return { name: r.name, levels: r.levels, score: r.score, perfect: r.perfect };
+  });
+}
+
+/* Richer board: top 20, the asking player's own row, the last 3, and the
+   total number of ranked players. */
+function buildBoard(entries, name) {
+  var all = rankAll(entries);
+  var key = String(name || '').trim().toLowerCase();
+  var me = null;
+  if (key) {
+    for (var i = 0; i < all.length; i++) {
+      if (all[i].name.toLowerCase() === key) { me = all[i]; break; }
+    }
+  }
+  var bottom = all.length > TOP_N
+    ? all.slice(Math.max(TOP_N, all.length - BOTTOM_N))
+    : [];
+  return { total: all.length, top: all.slice(0, TOP_N), me: me, bottom: bottom };
 }
 
 /* ---- server ---- */
@@ -50,7 +79,16 @@ http.createServer(function (req, res) {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') { res.writeHead(204); res.end(); return; }
 
-  /* GET /api/scores — top 20 leaderboard */
+  /* GET /api/leaderboard?name=X — top 20, caller's rank, bottom 3, total */
+  if (req.url.split('?')[0] === '/api/leaderboard' && req.method === 'GET') {
+    var q = new URL(req.url, 'http://localhost').searchParams;
+    var board = buildBoard(loadScores(), q.get('name'));
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(board));
+    return;
+  }
+
+  /* GET /api/scores — top 20 leaderboard (kept for older app builds) */
   if (req.url === '/api/scores' && req.method === 'GET') {
     var lb = buildLeaderboard(loadScores());
     res.writeHead(200, { 'Content-Type': 'application/json' });

@@ -177,28 +177,72 @@ DS.ui = (function () {
   }
 
   /* ---------- leaderboard ---------- */
+  /* Top 20, then the player's own rank and the last 3 when they fall outside
+     it. Falls back to the legacy top-20 list if the server is older. */
+  function fetchBoard(myName) {
+    var url = DS.API_BASE + '/api/leaderboard?name=' + encodeURIComponent(myName || '');
+    return fetch(url).then(function (r) {
+      if (!r.ok) throw new Error('no board endpoint');
+      return r.json();
+    }).catch(function () {
+      return fetch(DS.API_BASE + '/api/scores').then(function (r) { return r.json(); }).then(function (rows) {
+        rows = rows || [];
+        rows.forEach(function (row, i) { row.rank = i + 1; });
+        return { total: null, top: rows, me: null, bottom: [] };
+      });
+    });
+  }
+
   function renderLeaderboard() {
     var body = $('lb-body');
     body.innerHTML = '<div class="lb-loading">Loading scores…</div>';
-    fetch(DS.API_BASE + '/api/scores').then(function (r) { return r.json(); }).then(function (rows) {
-      if (!rows || rows.length === 0) {
+    var myName = DS.state.data.name;
+    var myKey = (myName || '').toLowerCase();
+
+    fetchBoard(myName).then(function (board) {
+      var top = board.top || [];
+      if (top.length === 0) {
         body.innerHTML = '<div class="lb-loading">No scores yet. Be the first!</div>';
         return;
       }
-      var html = '<table class="lb-table"><thead><tr>' +
-        '<th>#</th><th>CAPTAIN</th><th>LEVELS</th><th>SCORE</th><th>★★★</th>' +
-        '</tr></thead><tbody>';
-      var myName = DS.state.data.name;
-      rows.forEach(function (row, idx) {
-        var medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : (idx + 1);
-        var mine = myName && row.name.toLowerCase() === myName.toLowerCase();
-        html += '<tr class="' + (mine ? 'lb-mine' : '') + '">' +
+
+      /* Rows below the top 20: the player's own, then the last 3, no repeats. */
+      var extra = [];
+      var seen = {};
+      top.forEach(function (r) { seen[r.rank] = true; });
+      if (board.me && !seen[board.me.rank]) { extra.push(board.me); seen[board.me.rank] = true; }
+      (board.bottom || []).forEach(function (r) {
+        if (!seen[r.rank]) { extra.push(r); seen[r.rank] = true; }
+      });
+      extra.sort(function (a, b) { return a.rank - b.rank; });
+
+      function rowHtml(row) {
+        var medal = row.rank === 1 ? '🥇' : row.rank === 2 ? '🥈' : row.rank === 3 ? '🥉' : row.rank;
+        var mine = myKey && row.name.toLowerCase() === myKey;
+        return '<tr class="' + (mine ? 'lb-mine' : '') + '">' +
           '<td class="lb-rank">' + medal + '</td>' +
-          '<td class="lb-name">' + escHtml(row.name) + '</td>' +
+          '<td class="lb-name">' + escHtml(row.name) + (mine ? ' <span class="lb-you">YOU</span>' : '') + '</td>' +
           '<td class="lb-lvl">' + row.levels + '</td>' +
           '<td class="lb-score">' + row.score.toLocaleString() + '</td>' +
           '<td class="lb-perfect">' + row.perfect + '</td>' +
           '</tr>';
+      }
+      var gap = '<tr class="lb-gap"><td colspan="5">• • •</td></tr>';
+
+      var html = '';
+      if (board.total) {
+        html += '<div class="lb-total"><b>' + board.total.toLocaleString() + '</b> ' +
+          (board.total === 1 ? 'captain' : 'captains') + ' on the board</div>';
+      }
+      html += '<table class="lb-table"><thead><tr>' +
+        '<th>#</th><th>CAPTAIN</th><th>LEVELS</th><th>SCORE</th><th>★★★</th>' +
+        '</tr></thead><tbody>';
+      top.forEach(function (row) { html += rowHtml(row); });
+      var last = top[top.length - 1].rank;
+      extra.forEach(function (row) {
+        if (row.rank > last + 1) html += gap;
+        html += rowHtml(row);
+        last = row.rank;
       });
       html += '</tbody></table>';
       body.innerHTML = html;

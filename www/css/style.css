@@ -469,6 +469,11 @@ section[hidden] { display: none; }
 .lb-table tbody tr:nth-child(even) { background: #F5F8FA; }
 .lb-table { border-radius: 14px; overflow: hidden; box-shadow: 0 4px 0 rgba(22, 50, 74, 0.18); }
 .lb-mine { background: #FFFBEE !important; font-weight: 800; }
+.lb-total { text-align: center; margin: 0 0 10px; color: #fff; font-weight: 700; font-size: 14px; text-shadow: 0 1px 0 rgba(22, 50, 74, 0.5); }
+.lb-total b { font-family: 'Fredoka', 'Trebuchet MS', sans-serif; font-size: 18px; }
+.lb-table tbody tr.lb-gap { background: #EAF0F4 !important; }
+.lb-gap td { text-align: center; color: var(--gray); font-weight: 800; letter-spacing: 4px; padding: 4px 0; font-size: 11px; }
+.lb-you { display: inline-block; margin-left: 4px; padding: 1px 6px; border-radius: 6px; background: var(--coral); color: #fff; font-size: 9px; font-weight: 800; letter-spacing: 0.5px; vertical-align: middle; }
 .lb-rank { text-align: center; width: 36px; padding: 8px 4px; }
 .lb-name { font-weight: 700; color: var(--navy); padding: 8px 6px; max-width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .lb-lvl, .lb-score, .lb-perfect { text-align: center; padding: 8px 6px; color: var(--gray); font-weight: 700; }
